@@ -7,15 +7,26 @@ require 'Curl.php';
 $url = "https://app.shippigo.com/api/trackFront";
 $tracking_id = $_GET['tracking_id'];
 if(empty($tracking_id)){
-    echo 'Enter tracking id first';
+    $error = 'ADD tracking id In the url with ?tracking_id=';
+    echo $error;
     die;
 }
+
+
 $param = "awb=$tracking_id";
 $curl = new Curl;
 $response = $curl->postCurl($url,$param);
-
 $data = json_decode($response,1);
-
+if(empty($data) || count($data) == 0){
+    $error = 'Scraping error';
+    echo $error;
+    die; 
+}
+if(!empty($data['status']) && $data['status'] == 400){
+    $error = $data['error']['detail'] ?? 'Scraping error';
+    echo $error;
+    die;
+}
 $final_data = [];
 $i = 0;
 foreach($data['data'] as $key => $value){
