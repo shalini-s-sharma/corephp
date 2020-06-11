@@ -24,30 +24,43 @@ require 'gogoexpress.php';
     </style>
 </head>
 <body>
+
+<?php if(!empty($final_data) && count($final_data) > 0){ ?>
 <table class="shp_table"> 
 <tbody><tr>
 <td colspan="4" style="background-color: #2FCD97;text-align: center;color:#fff;font-size: 16px;border-color: #2FCD97;"><?= $final_data['Final Status']??'';  ?><!-- <a class="notify"><i class="fa fa-bell" onclick = "askquestion()" >    <small> Notify me</small></i></a> -->   <!--  --> </td>  
 </tr>
-
+<?php if(!empty($final_data['Tracking ID'])){ ?>
 <tr>
 <td colspan="1" style="font-weight:bold;">
 <b>Tracking ID</b></td><td colspan="2"><?= $final_data['Tracking ID'] ?? ''; ?></td>
 </tr>
+<?php } ?>
+<?php if(!empty($final_data['Pickup Date'])){ ?>
 <tr>
 <td colspan="1" style="font-weight:bold;">Pickup Date</td><td colspan="2"><?= $final_data['Pickup Date'] ?? ''; ?></td>
 </tr>
-    <tr>
+<?php } ?>
+<?php if(!empty($final_data['Origin'])){ ?>
+<tr>
 <td colspan="1" style="font-weight:bold;">Origin</td><td colspan="2"><?= $final_data['Origin'] ?? ''; ?></td>
 </tr>
-    <tr>
+<?php } ?>
+<?php if(!empty($final_data['Destination'])){ ?>
+<tr>
 <td colspan="1" style="font-weight:bold;">Destination</td><td colspan="2"><?= $final_data['Destination'] ?? ''; ?></td>
 </tr>
-    <tr>
-<td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $final_data['Status Time']?? ''; ?></td>
+<?php } ?>
+<?php if(!empty($final_data['Status Time'])){ ?>
+<tr>
+<td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $final_data['Status Time'] ?? ''; ?></td>
 </tr>
+<?php } ?>
+<?php if(!empty($final_data['Recepient'])){ ?>
 <tr>
 <td colspan="1" style="font-weight:bold;">Recepient</td><td colspan="2"><?= $final_data['Recepient']?? ''; ?></td>
 </tr>
+<?php } ?>
 <?php foreach($final_data['details'] as $date => $value){ ?>
     <tr class="onj-tr"><td colspan="4"><?= $date ?? ''; ?></td></tr>
     <?php foreach($value as $val){ ?>
@@ -58,6 +71,8 @@ require 'gogoexpress.php';
     </tr>
     <?php } ?>
 <?php } ?>
-</tbody></table> 
+</tbody>
+</table>
+<?php } ?> 
 </body>
 </html>
