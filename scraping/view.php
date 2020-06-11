@@ -45,6 +45,9 @@ require 'gogoexpress.php';
     <tr>
 <td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $final_data['Status Time']?? ''; ?></td>
 </tr>
+<tr>
+<td colspan="1" style="font-weight:bold;">Recepient</td><td colspan="2"><?= $final_data['Recepient']?? ''; ?></td>
+</tr>
 <?php foreach($final_data['details'] as $date => $value){ ?>
     <tr class="onj-tr"><td colspan="4"><?= $date ?? ''; ?></td></tr>
     <?php foreach($value as $val){ ?>

@@ -34,7 +34,7 @@ foreach($cdata['events'] as $key => $val){
     }
     if((count($cdata['events'])-1) == $key){
         $arr = explode('by',$val['remarks']);
-        $final_data['Destination'] = $arr[1] ?? ''; 
+        $final_data['Recepient'] = $arr[1] ?? ''; 
         $final_data['Status Time'] = date('d/m/Y',strtotime($val['created_at'])) ?? ''; 
     } 
 }
