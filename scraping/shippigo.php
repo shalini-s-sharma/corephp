@@ -7,7 +7,7 @@ require 'Curl.php';
 $url = "https://app.shippigo.com/api/trackFront";
 $tracking_id = $_GET['tracking_id'];
 if(empty($tracking_id)){
-    echo 'Enter tracking id firt';
+    echo 'Enter tracking id first';
     die;
 }
 $param = "awb=$tracking_id";
