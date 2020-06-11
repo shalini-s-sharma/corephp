@@ -6,6 +6,10 @@ require 'simplehtmldom/simple_html_dom.php';
 require 'Curl.php';
 $url = "https://app.shippigo.com/api/trackFront";
 $tracking_id = $_GET['tracking_id'];
+if(empty($tracking_id)){
+    echo 'Enter tracking id firt';
+    die;
+}
 $param = "awb=$tracking_id";
 $curl = new Curl;
 $response = $curl->postCurl($url,$param);
