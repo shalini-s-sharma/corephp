@@ -1,5 +1,5 @@
 <?php 
-    require('scrap.php');
+    require('shippigo.php');
 ?>
 
 <!DOCTYPE html>
