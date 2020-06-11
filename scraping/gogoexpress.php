@@ -13,6 +13,12 @@ if(empty($tracking_id)){
     die;
 }
 
+$track = explode('-',$tracking_id);
+if(!empty($track) && count($track) < 3){
+    $trackstring = str_split($tracking_id,4);
+    $tracking_id = implode('-',$trackstring);
+}
+
 
 $url = str_replace('{awb_no}', $tracking_id, $url);
 $curl = new Curl;
