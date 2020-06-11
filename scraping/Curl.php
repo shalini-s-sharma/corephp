@@ -2,7 +2,7 @@
 
 class Curl{
 
-function getCurl($url,$params){
+function getCurl($url){
 
 	$curl = curl_init();
 

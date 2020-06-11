@@ -1,7 +1,6 @@
 <?php 
-    require('shippigo.php');
+require 'gogoexpress.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,12 +46,12 @@
 <td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $final_data['Status Time']?? ''; ?></td>
 </tr>
 <?php foreach($final_data['details'] as $date => $value){ ?>
-    <tr class="onj-tr"><td colspan="4"><?= date('d/m/Y',strtotime($date)) ?></td></tr>
+    <tr class="onj-tr"><td colspan="4"><?= $date ?? ''; ?></td></tr>
     <?php foreach($value as $val){ ?>
     <tr>
-    <td><?= $val['Location'] ?? '';  ?></td>
+    <td><?= $val['Location'] ?? 'N/A';  ?></td>
     <td><?= $val['Event'] ?? '';  ?></td>
-            <td><?= date('D , i:s',strtotime($val['Date'])) ?></td>
+    <td><?= $val['Date'] ?? ''; ?></td>
     </tr>
     <?php } ?>
 <?php } ?>
