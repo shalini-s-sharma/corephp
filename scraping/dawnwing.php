@@ -25,7 +25,7 @@ foreach ($table_desc->find('tr') as $row){
             $final_data['details'][$date][$i]['Event']= $event;
             $final_data['details'][$date][$i]['Location']= $location;
             $finaldate = $date.''.$time;
-            $final_data['details'][$date][$i]['Date'] = date('D , i:s',strtotime($finaldate));;
+            $final_data['details'][$date][$i]['Date'] = date('D , h:i',strtotime($finaldate));;
         }
         $i++;
     }

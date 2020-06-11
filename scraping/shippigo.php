@@ -24,7 +24,7 @@ foreach($data['data'] as $key => $value){
     $date = date('d/m/Y',strtotime($date));
     $final_data['details'][$date][$i]['Event']= $location;
     $final_data['details'][$date][$i]['Location']= $value['details'];
-    $final_data['details'][$date][$i]['Date'] = date('D , i:s',strtotime($value['updatedOn']));
+    $final_data['details'][$date][$i]['Date'] = date('D , h:i',strtotime($value['updatedOn']));
     $last_element = count($data['data'])-1;
     if($key == 0){
       $origin =  $location;
