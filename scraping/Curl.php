@@ -89,7 +89,6 @@ class Curl{
     ));
 
       $response = curl_exec($curl);
-      $response = curl_exec($curl);
       preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
       $cookies = '';
       foreach($matches[1] as $item) {
