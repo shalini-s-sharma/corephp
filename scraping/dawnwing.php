@@ -1,6 +1,4 @@
-<head>
-  <meta charset="UTF-8">
-</head>
+
 <?php
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -21,16 +19,17 @@ class Courier extends Curl
         $destination_from = '';
         $destination_to   = '';
         $recipient        = '';
-        $current_status   = '';
+        $current_status   = ''; 
         $sender           = '';
         $extras           = array();
         $return_array     = array();
         $scan             = array();
 
 
-        $url       = "http://www.dawnwing.co.za/business-tools/online-parcel-tracking/";
+        $url   = "http://www.dawnwing.co.za/business-tools/online-parcel-tracking/";
         $param = "WaybillNo={awb_no}&parcel-search=go";
         $param = str_replace('{awb_no}', $waybill_number,$param);
+        
         $response  = $this->postCurl($url,$param);
         // print_r(empty($response));die;
         if (empty($response)) {
