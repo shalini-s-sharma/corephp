@@ -55,13 +55,16 @@ class Courier
                     $time = $stats[3]->plaintext ?? '';
 
                     if(!empty($date)){
-                        $finaldate = $date.''.$time;
+                        $finaldate = $date.' '.$time;
                         $scan[$i]['date']     = !empty($finaldate) ? date('Y-m-d', strtotime(str_replace('/', '-',$finaldate))) : '';
                         $scan[$i]['time']     = !empty($finaldate) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $finaldate))) : '';
                         $scan[$i]['location'] = $location ?? '';
                         $scan[$i]['details']  = $event ?? '';
                         $pickupdate = $scan[$i]['time'] ?? '';
                         $destination_to = $scan[$i]['location'] ?? '';
+                        $current_status = $scan[$i]['details'] ?? '';
+                        $status_date    = $scan[$i]['date'] ?? '';
+                        $status_time    = $scan[$i]['time'] ?? '';
                         $i++;
                     }
                 }
@@ -134,14 +137,7 @@ class Courier
 
         }
        
-        $current_status = $scan[0]['details'] ?? '';
-        $status_date    = $scan[0]['date'] ?? '';
-        $status_time    = $scan[0]['time'] ?? '';
-        // uksort($return_array['details'],function($dt1,$dt2){
-        //     $tm1 = strtotime($dt1);
-        //     $tm2 = strtotime($dt2);
-        //     return ($tm1 < $tm2) ? -1 : (($tm1 > $tm2) ? 1 : 0);
-        // });
+
         krsort($scan);
         $return_array['scan'] = $scan;
         $return_array['tracking_id'] = $tracking_id ?? '';
@@ -157,10 +153,6 @@ class Courier
         return $return_array;  
     }
 
-    private function clean($value)
-    {
-        return preg_replace('!\s+!', ' ', trim(strip_tags($value)));
-    }
 
     function postCurl($url,$params){
 
@@ -189,31 +181,6 @@ class Courier
         ));
 
         $response = curl_exec($curl);
-          preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
-          $cookies = '';
-          foreach($matches[1] as $item) {
-              $cookies = $item;
-          }
-          if(!empty($cookies)){
-              curl_setopt_array($curl, array(
-                CURLOPT_URL => $url,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "GET",
-                CURLOPT_HTTPHEADER => array(
-                  "Connection: keep-alive",
-                  "Cache-Control: max-age=0",
-                  "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
-                  "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-                  "Cookie: $cookies"
-                ),
-              ));
-            
-            $response = curl_exec($curl);
-          }
           $err = curl_error($curl);
 
           curl_close($curl);
@@ -232,7 +199,7 @@ class Courier
 
 $object = New Courier();
 $data = $object->scrapping("1321633574");
-// echo '<pre>';print_r($data);die;
+echo '<pre>';print_r($data);die;
 // include('view.php');
 // print_r($data);
 

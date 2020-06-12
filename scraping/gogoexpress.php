@@ -3,8 +3,8 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 include('simplehtmldom/simple_html_dom.php');
-require 'Curl.php';
-class Courier extends Curl
+
+class Courier 
 {
     private $error;
 
@@ -32,14 +32,15 @@ class Courier extends Curl
         }
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
-       
         // $curl = new Curl;
         $data = $this->getCurl($url);
-        $data = json_decode($data,1);
-        if(empty($data) || count($data) == 0){
+    
+        if(empty($data)){
             $error['error'] = 'No information found.Please try again.';
             return $error;
         }
+
+        $data = json_decode($data,1);
         
         if(!empty($data['status']) && $data['status'] == 400){
             $error['error'] = 'No information found.Please try again.';
@@ -56,15 +57,11 @@ class Courier extends Curl
             $date = date('d/m/Y',strtotime($val['created_at']));
 
             if(!empty($date)){
-                $return_array['details'][$date][$i]['Event']= $val['remarks'] ?? '';
-                $return_array['details'][$date][$i]['Location']= '';
-                $return_array['details'][$date][$i]['Date'] =  date('D , h:i',strtotime($val['created_at']));
-                
-                $scan[$i]['date']     = !empty($date) ? date('Y-m-d', strtotime(str_replace('/', '-',$date))) : '';
-                $scan[$i]['time']     = !empty($date) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $date))) : '';
+                $scan[$i]['date'] = !empty($date) ? date('Y-m-d', strtotime(str_replace('/', '-',$date))) : '';
+                $scan[$i]['time'] = !empty($date) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-',$date))) : '';
                 $scan[$i]['location'] = '';
                 $scan[$i]['details']  = $val['remarks'] ?? '';
-                $pickupdate = $scan[$i]['time'];
+                $pickupdate = $scan[$i]['time'] ?? '';
                 if(!empty($scan[$i]['details'])){
                     $arr = explode('Consignee',$scan[$i]['details']);
                     $recipient = $arr[1] ?? '';
@@ -91,10 +88,36 @@ class Courier extends Curl
         return $return_array;  
     }
 
-    private function clean($value)
-    {
-        return preg_replace('!\s+!', ' ', trim(strip_tags($value)));
-    }
+    function getCurl($url){
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "GET",
+          CURLOPT_HTTPHEADER => array(
+            "cache-control: no-cache",
+            "postman-token: 366befd3-c02f-8ad0-3756-f8e0264d9114"
+          ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+          return "cURL Error #:" . $err;
+        } else {
+          return $response;
+        }
+
+  }
     
 }
 
@@ -102,7 +125,7 @@ class Courier extends Curl
 
 $object = New Courier();
 $data = $object->scrapping("4288-3661-VJUC");
-//echo '<pre>';print_r($data);die;
+echo '<pre>';print_r($data);die;
 include('view.php');
 // print_r($data);
 
