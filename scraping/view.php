@@ -1,12 +1,10 @@
-<?php 
-require 'gogoexpress.php';
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Scraping</title>
     <style>
     .shp_table {
         width: ;
@@ -24,44 +22,46 @@ require 'gogoexpress.php';
     </style>
 </head>
 <body>
-
-<?php if(!empty($final_data) && count($final_data) > 0){ ?>
+<?php if(!empty($error) && count($error) > 0){
+    echo $error['error'];
+}  ?>
+<?php if(!empty($data) && count($data) > 0){ ?>
 <table class="shp_table"> 
 <tbody><tr>
-<td colspan="4" style="background-color: #2FCD97;text-align: center;color:#fff;font-size: 16px;border-color: #2FCD97;"><?= $final_data['Final Status']??'';  ?><!-- <a class="notify"><i class="fa fa-bell" onclick = "askquestion()" >    <small> Notify me</small></i></a> -->   <!--  --> </td>  
+<td colspan="4" style="background-color: #2FCD97;text-align: center;color:#fff;font-size: 16px;border-color: #2FCD97;"><?= $data['status']??'';  ?></td>  
 </tr>
-<?php if(!empty($final_data['Tracking ID'])){ ?>
+<?php if(!empty($data['tracking_id'])){ ?>
 <tr>
 <td colspan="1" style="font-weight:bold;">
-<b>Tracking ID</b></td><td colspan="2"><?= $final_data['Tracking ID'] ?? ''; ?></td>
+<b>Tracking ID</b></td><td colspan="2"><?= $data['tracking_id'] ?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php if(!empty($final_data['Pickup Date'])){ ?>
+<?php if(!empty($data['pickupdate'])){ ?>
 <tr>
-<td colspan="1" style="font-weight:bold;">Pickup Date</td><td colspan="2"><?= $final_data['Pickup Date'] ?? ''; ?></td>
+<td colspan="1" style="font-weight:bold;">Pickup Date</td><td colspan="2"><?= date('d/m/Y h:i',strtotime($data['pickupdate'])) ?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php if(!empty($final_data['Origin'])){ ?>
+<?php if(!empty($data['destination_from'])){ ?>
 <tr>
-<td colspan="1" style="font-weight:bold;">Origin</td><td colspan="2"><?= $final_data['Origin'] ?? ''; ?></td>
+<td colspan="1" style="font-weight:bold;">Origin</td><td colspan="2"><?= $data['destination_from'] ?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php if(!empty($final_data['Destination'])){ ?>
+<?php if(!empty($data['destination_to'])){ ?>
 <tr>
-<td colspan="1" style="font-weight:bold;">Destination</td><td colspan="2"><?= $final_data['Destination'] ?? ''; ?></td>
+<td colspan="1" style="font-weight:bold;">Destination</td><td colspan="2"><?= $data['destination_to'] ?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php if(!empty($final_data['Status Time'])){ ?>
+<?php if(!empty($data['status_time'])){ ?>
 <tr>
-<td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $final_data['Status Time'] ?? ''; ?></td>
+<td colspan="1" style="font-weight:bold;">Status Time</td><td colspan="2"><?= $data['status_time'] ?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php if(!empty($final_data['Recepient'])){ ?>
+<?php if(!empty($data['recepient'])){ ?>
 <tr>
-<td colspan="1" style="font-weight:bold;">Recepient</td><td colspan="2"><?= $final_data['Recepient']?? ''; ?></td>
+<td colspan="1" style="font-weight:bold;">Recepient</td><td colspan="2"><?= $data['recepient']?? ''; ?></td>
 </tr>
 <?php } ?>
-<?php foreach($final_data['details'] as $date => $value){ ?>
+<?php foreach($data['details'] as $date => $value){ ?>
     <tr class="onj-tr"><td colspan="4"><?= $date ?? ''; ?></td></tr>
     <?php foreach($value as $val){ ?>
     <tr>
