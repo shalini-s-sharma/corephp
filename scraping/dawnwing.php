@@ -57,18 +57,19 @@ class Courier extends Curl
                     $date = $stats[2]->plaintext;
                     $time = $stats[3]->plaintext;
 
-                    $return_array['details'][$date][$i]['Event']= $event;
-                    $return_array['details'][$date][$i]['Location']= $location;
-                    $finaldate = $date.''.$time;
-                    $return_array['details'][$date][$i]['Date'] = date('D , h:i',strtotime($finaldate));
-                    $scan[$i]['date']     = !empty($finaldate) ? date('Y-m-d', strtotime(str_replace('/', '-',$finaldate))) : '';
-                    $scan[$i]['time']     = !empty($finaldate) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $finaldate))) : '';
-                    $scan[$i]['location'] = $location ?? '';
-                    $scan[$i]['details']  = $event ?? '';
-                    $pickupdate = $scan[$i]['time'];
-                    $destination_to = $scan[$i]['location'];
-                    $i++;
-                   
+                    if(!empty($date)){
+                        $return_array['details'][$date][$i]['Event']= $event;
+                        $return_array['details'][$date][$i]['Location']= $location;
+                        $finaldate = $date.''.$time;
+                        $return_array['details'][$date][$i]['Date'] = date('D , h:i',strtotime($finaldate));
+                        $scan[$i]['date']     = !empty($finaldate) ? date('Y-m-d', strtotime(str_replace('/', '-',$finaldate))) : '';
+                        $scan[$i]['time']     = !empty($finaldate) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $finaldate))) : '';
+                        $scan[$i]['location'] = $location ?? '';
+                        $scan[$i]['details']  = $event ?? '';
+                        $pickupdate = $scan[$i]['time'];
+                        $destination_to = $scan[$i]['location'];
+                        $i++;
+                    }
                 }
                 
             }
