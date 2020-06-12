@@ -3,10 +3,8 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 include('simplehtmldom/simple_html_dom.php');
-require 'Curl.php';
 
-
-class Courier extends Curl
+class Courier
 {
     private $error;
 
@@ -48,25 +46,22 @@ class Courier extends Curl
         $i = 0;
         if(!empty($table_desc)){
             foreach ($table_desc->find('tr') as $row){
-                $stats = $row->find('td');
+                $stats = $row->find('td');  
                 if (isset($stats[0]) && !empty($stats[0]->plaintext))
                 {
-                    $event = $stats[0]->plaintext;
-                    $location = $stats[1]->plaintext;
-                    $date = $stats[2]->plaintext;
-                    $time = $stats[3]->plaintext;
+                    $event = $stats[0]->plaintext ?? '';
+                    $location = $stats[1]->plaintext ?? '';
+                    $date = $stats[2]->plaintext ?? '';
+                    $time = $stats[3]->plaintext ?? '';
 
                     if(!empty($date)){
-                        $return_array['details'][$date][$i]['Event']= $event;
-                        $return_array['details'][$date][$i]['Location']= $location;
                         $finaldate = $date.''.$time;
-                        $return_array['details'][$date][$i]['Date'] = date('D , h:i',strtotime($finaldate));
                         $scan[$i]['date']     = !empty($finaldate) ? date('Y-m-d', strtotime(str_replace('/', '-',$finaldate))) : '';
                         $scan[$i]['time']     = !empty($finaldate) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $finaldate))) : '';
                         $scan[$i]['location'] = $location ?? '';
                         $scan[$i]['details']  = $event ?? '';
-                        $pickupdate = $scan[$i]['time'];
-                        $destination_to = $scan[$i]['location'];
+                        $pickupdate = $scan[$i]['time'] ?? '';
+                        $destination_to = $scan[$i]['location'] ?? '';
                         $i++;
                     }
                 }
@@ -147,6 +142,7 @@ class Courier extends Curl
         //     $tm2 = strtotime($dt2);
         //     return ($tm1 < $tm2) ? -1 : (($tm1 > $tm2) ? 1 : 0);
         // });
+        krsort($scan);
         $return_array['scan'] = $scan;
         $return_array['tracking_id'] = $tracking_id ?? '';
         $return_array['destination_from'] = ($scan[0]['location']) ?? '';
@@ -165,6 +161,70 @@ class Courier extends Curl
     {
         return preg_replace('!\s+!', ' ', trim(strip_tags($value)));
     }
+
+    function postCurl($url,$params){
+
+        $curl = curl_init();
+        if(is_array($params)){
+          $parameters = implode('&',$params);
+        }else{
+          $parameters = $params;
+        }
+
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "POST",
+          CURLOPT_POSTFIELDS => $parameters,
+          CURLOPT_HTTPHEADER => array(
+            "cache-control: no-cache",
+            "postman-token: 366befd3-c02f-8ad0-3756-f8e0264d9114"
+          ),
+        ));
+
+        $response = curl_exec($curl);
+          preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
+          $cookies = '';
+          foreach($matches[1] as $item) {
+              $cookies = $item;
+          }
+          if(!empty($cookies)){
+              curl_setopt_array($curl, array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                  "Connection: keep-alive",
+                  "Cache-Control: max-age=0",
+                  "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
+                  "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                  "Cookie: $cookies"
+                ),
+              ));
+            
+            $response = curl_exec($curl);
+          }
+          $err = curl_error($curl);
+
+          curl_close($curl);
+
+          if ($err) {
+            return "cURL Error #:" . $err;
+          } else {
+            return $response;
+          }
+
+    }
     
 }
 
@@ -172,8 +232,8 @@ class Courier extends Curl
 
 $object = New Courier();
 $data = $object->scrapping("1321633574");
-//echo '<pre>';print_r($data);die;
-include('view.php');
+// echo '<pre>';print_r($data);die;
+// include('view.php');
 // print_r($data);
 
 
