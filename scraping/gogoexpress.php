@@ -32,7 +32,6 @@ class Courier
         }
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
-        // $curl = new Curl;
         $data = $this->getCurl($url);
     
         if(empty($data)){
@@ -89,9 +88,7 @@ class Courier
     }
 
     function getCurl($url){
-
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url,
           CURLOPT_RETURNTRANSFER => true,
@@ -116,9 +113,7 @@ class Courier
         } else {
           return $response;
         }
-
-  }
-    
+    }  
 }
 
 
@@ -126,6 +121,5 @@ class Courier
 $object = New Courier();
 $data = $object->scrapping("4288-3661-VJUC");
 echo '<pre>';print_r($data);die;
-include('view.php');
-// print_r($data);
+
 

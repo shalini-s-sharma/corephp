@@ -28,8 +28,6 @@ class Courier
         $waybill_number = base64_encode($waybill_number);
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
-       
-        // $curl = new Curl;
         $response = $this->getCurl($url);
         if (empty($response)) {
             $error['error'] = 'No information found.Please try again.';
@@ -47,7 +45,8 @@ class Courier
             $text =  html_entity_decode($span1);
             $text = preg_replace('/<br[^>]*>/i',',', $text);
             $arr = explode(',',$text);
-            foreach($arr as $value){
+            if(count($arr) > 0){
+              foreach($arr as $value){
                 $val = trim($value);
                 $a = explode(':',$val);
                 if(!empty($a[0])){
@@ -57,6 +56,7 @@ class Courier
                     }   
                 }  
             }
+          }
         }
         
     
@@ -68,11 +68,9 @@ class Courier
                 $sub_div = $value->find('div[class="cd-timeline-content"]',0);
                 if(!empty($sub_div)){
                     //span 2
-                    $date = $sub_div->find('span[class="cd-date"]',0)->innertext;
-                    $datefilter = str_replace('เวลา',' ',$date);
-                    $date = date('d/m/Y',strtotime($datefilter));
-                 
-            
+                    $date = $sub_div->find('span[class="cd-date"]',0)->innertext ?? '';
+                    $datefilter = str_replace('เวลา',' ',$date) ?? '';
+    
                     // span 1
                     $detail = $sub_div->find('span[class="tracking-position"] h2 span',0)->innertext;
                     $detail = trim(str_replace(array( '(', ')' ), '',$detail));
@@ -88,7 +86,8 @@ class Courier
                 }
             }
         }
-       
+        $html->clear();
+        unset($html);
         $current_status = $scan[0]['details'] ?? '';
         $status_date    = $scan[0]['date'] ?? '';
         $status_time    = $scan[0]['time'] ?? '';
@@ -101,71 +100,65 @@ class Courier
         $return_array['status_date'] = $status_date;
         $return_array['status_time'] = $status_time;
         $return_array['pickupdate']  = $pickupdate ?? '';
-
         return $return_array;  
     }
 
-function getCurl($url){
+    function getCurl($url){
 
-    $curl = curl_init();
+      $curl = curl_init();
 
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => $url,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => "",
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 30,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => "GET",
-      CURLOPT_HEADER => 1,
-      CURLOPT_HTTPHEADER => array(
-        "cache-control: no-cache",
-        "postman-token: 366befd3-c02f-8ad0-3756-f8e0264d9114"
-      ),
-    ));
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HEADER => 1,
+        CURLOPT_HTTPHEADER => array(
+          "cache-control: no-cache",
+          "postman-token: 366befd3-c02f-8ad0-3756-f8e0264d9114"
+        ),
+      ));
 
-    $response = curl_exec($curl);
-    preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
-    $cookies = '';
-    foreach($matches[1] as $item) {
-        $cookies = $item;
-    }
-    if(!empty($cookies)){
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => $url,
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 30,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "GET",
-          CURLOPT_HTTPHEADER => array(
-            "Connection: keep-alive",
-            "Cache-Control: max-age=0",
-            "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
-            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Cookie: $cookies"
-          ),
-        ));
-      
       $response = curl_exec($curl);
-    }
+      preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
+      $cookies = '';
+      foreach($matches[1] as $item) {
+          $cookies = $item;
+      }
+      if(!empty($cookies)){
+          curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+              "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
+              "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+              "Cookie: $cookies"
+            ),
+          ));
+        
+        $response = curl_exec($curl);
+      }
 
-    $err = curl_error($curl);
+      $err = curl_error($curl);
 
-    curl_close($curl);
+      curl_close($curl);
 
-    if ($err) {
-      return "cURL Error #:" . $err;
-    } else {
-      return $response;
-    }
+      if ($err) {
+        return "cURL Error #:" . $err;
+      } else {
+        return $response;
+      }
 
-  }
-
-    
+    }    
 }
-
 
 
 $object = New Courier();

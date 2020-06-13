@@ -137,7 +137,8 @@ class Courier
 
         }
        
-
+        $html->clear();
+        unset($html);
         krsort($scan);
         $return_array['scan'] = $scan;
         $return_array['tracking_id'] = $tracking_id ?? '';
@@ -148,22 +149,14 @@ class Courier
         $return_array['status_date'] = $status_date;
         $return_array['status_time'] = $status_time;
         $return_array['pickupdate']  = $pickupdate ?? '';
-
-       // echo '<pre>';print_r($return_array);die;
+    
         return $return_array;  
     }
 
 
     function postCurl($url,$params){
-
         $curl = curl_init();
-        if(is_array($params)){
-          $parameters = implode('&',$params);
-        }else{
-          $parameters = $params;
-        }
-
-
+        $parameters = $params;
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url,
           CURLOPT_RETURNTRANSFER => true,
@@ -194,8 +187,6 @@ class Courier
     }
     
 }
-
-
 
 $object = New Courier();
 $data = $object->scrapping("1321633574");
