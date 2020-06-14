@@ -25,11 +25,12 @@ class Courier
 
         $url       = "https://api.gogoxpress.com/v1/track/{awb_no}";
 
-        $track = explode('-',$waybill_number);
-        if(!empty($track) && count($track) < 3){
+        $count = substr_count($waybill_number,"-"); 
+        if($count < 2 || $count > 2){
             $trackstring = str_split($waybill_number,4);
-            $$waybill_number = implode('-',$trackstring);
+            $waybill_number = implode('-',$trackstring);
         }
+       
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
         $data = $this->getCurl($url);
@@ -118,8 +119,10 @@ class Courier
 
 
 
+$track = $_GET['track_id'];
+//"4288-3661-VJUC"
 $object = New Courier();
-$data = $object->scrapping("4288-3661-VJUC");
+$data = $object->scrapping($track);
 echo '<pre>';print_r($data);die;
 
 

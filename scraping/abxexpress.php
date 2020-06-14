@@ -149,7 +149,7 @@ class Courier
 
 $track = $_GET['track_id'];
 //"83361027361"
-$object = New Courier($track);
+$object = New Courier();
 $data = $object->scrapping($track);
 echo '<pre>';print_r($data);die;
 include('view.php');

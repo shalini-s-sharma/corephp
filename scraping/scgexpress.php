@@ -40,7 +40,7 @@ class Courier
             return $error;
         }
 
-        $span1 = $html->find('div[class="track-detail-order"] span',0)->innertext;
+        $span1 = $html->find('div[class="track-detail-order"] span',0)->innertext;  
         if(!empty($span1)){
             $text =  html_entity_decode($span1);
             $text = preg_replace('/<br[^>]*>/i',',', $text);
@@ -57,6 +57,11 @@ class Courier
                 }  
             }
           }
+        }
+
+        if(!empty($return_array['tracking_id']) &&  trim($return_array['tracking_id']) == '-'){
+            $error['error'] = 'No information found.Please try again.';
+            return $error;
         }
         
     
@@ -161,8 +166,10 @@ class Courier
 }
 
 
+$track = $_GET['track_id'];
+//"121394342823"
 $object = New Courier();
-$data = $object->scrapping("121394342823");
+$data = $object->scrapping($track);
 echo '<pre>';print_r($data);die;
 include('view.php');
 // print_r($data);

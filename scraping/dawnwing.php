@@ -29,7 +29,7 @@ class Courier
         $param = str_replace('{awb_no}', $waybill_number,$param);
         
         $response  = $this->postCurl($url,$param);
-        // print_r(empty($response));die;
+        // print_r(($response));die;
         if (empty($response)) {
             $error['error'] = 'No information found.Please try again.';
             return $error;
@@ -37,6 +37,12 @@ class Courier
         
         $html = str_get_html($response);
         if (empty($html)) {
+            $error['error'] = 'No information found.Please try again.';
+            return $error;
+        }
+
+        $checkerror = $html->find('div[class="post-entry"] p',0)->innertext ?? '';
+        if(!empty($checkerror)){
             $error['error'] = 'No information found.Please try again.';
             return $error;
         }
@@ -188,8 +194,10 @@ class Courier
     
 }
 
+$track = $_GET['track_id'];
+//"1321633574"
 $object = New Courier();
-$data = $object->scrapping("1321633574");
+$data = $object->scrapping($track);
 echo '<pre>';print_r($data);die;
 // include('view.php');
 // print_r($data);
