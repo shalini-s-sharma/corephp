@@ -40,39 +40,51 @@ class Courier
             $error['error'] = 'No information found.Please try again.';
             return $error;
         }    
-        
-        $li1 = $html->find('div[class="vote-info"] ul li',0);
-        $destination= $li1->find('span span[class="msgcss"]',1)->innertext ?? '';
-       // echo $destination;die;
+      
         $li2 = $html->find('div[class="vote-info"] ul li',1);
-        $current_status = $li2->find('span[class="msgcss"]',0)->innertext ?? '';
-
+        if(!empty($li2)){
+          $current_status = $li2->find('span[class="msgcss"]',0)->innertext ?? '';
+        }
+      
         $data =  $html->find('span[class="vertical-date"]');
+        $i=0;
         if(!empty($data)){
           foreach($data as $value){
             $ul = $value->find('ul li',0)->innertext ?? '';
-            $ul = htmlentities($ul);
-            echo $ul;
-        
-            $tag = 'i';
-            preg_replace('/<(.+?)[\s]*\/?[\s]*>/si',',', $ul);
-            echo $ul;die;
-            if(!empty($ul)){
-              $arr = explode('</i>',$ul);
-              print_r($arr);die;
+            $ul =  trim(html_entity_decode($ul));
+            $ul = preg_replace('/<(.+?)[\s]*\/?[\s]*>/i','|',$ul);
+            $arr = explode('||',$ul);
+            if(count($arr) > 0){
+              $location = trim($arr[2]) ?? '';
+              $finaldate = trim($arr[1]) ?? '';
+              $event = trim($arr[3]) ?? '';
+              $scan[$i]['date']     = !empty($finaldate) ? date('Y-m-d', strtotime(str_replace('/', '-',$finaldate))) : '';
+              $scan[$i]['time']     = !empty($finaldate) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $finaldate))) : '';
+              $scan[$i]['location'] = $location ?? '';
+              $scan[$i]['details']  = $event ?? '';
+              $pickupdate = $scan[$i]['time'] ?? '';
+              $destination_from = $scan[$i]['location'] ?? '';
+              $current_status = $scan[$i]['details'] ?? '';
+              $status_date    = $scan[$i]['date'] ?? '';
+              $status_time    = $scan[$i]['time'] ?? '';
+              $i++;
             }
-            
           }
+        }
+
+        if (count($scan) == 0) {
+          $error['error'] = 'No information found.Please try again.';
+          return $error;
         }
     
         $html->clear();
         unset($html);
         
-        $current_status = $scan[0]['details'] ?? '';
         $status_date    = $scan[0]['date'] ?? '';
         $status_time    = $scan[0]['time'] ?? '';
+        $destination_to = $scan[0]['location'] ?? '';
         $return_array['scan'] = $scan;
-        $return_array['destination_from'] = ($scan[0]['location']) ?? '';
+        $return_array['destination_from'] = $destination_from ?? '';
         $return_array['destination_to']   = $destination_to ?? '';
         $return_array['status']           = !empty($current_status) ? $current_status : "";
         $return_array['current_status']   = !empty($current_status) ? $current_status : "";
@@ -145,8 +157,10 @@ class Courier
 
 
 
+$track = $_GET['track_id'];
+//"TDQAB0003536942YQ"
 $object = New Courier();
-$data = $object->scrapping("TDQAB0003536942YQ");
+$data = $object->scrapping($track);
 echo '<pre>';print_r($data);die;
 include('view.php');
 // print_r($data);
