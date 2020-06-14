@@ -39,12 +39,12 @@ class Courier
         if (empty($html)) {
             $error['error'] = 'No information found.Please try again.';
             return $error;
-        }    
-      
-        $li2 = $html->find('div[class="vote-info"] ul li',1);
-        if(!empty($li2)){
-          $current_status = $li2->find('span[class="msgcss"]',0)->innertext ?? '';
-        }
+        }  
+        
+        // $li2 = $html->find('div[class="vote-info"] ul li',1);
+        // if(!empty($li2)){
+        //   $current_status = $li2->find('span[class="msgcss"]',0)->innertext ?? '';
+        // }
       
         $data =  $html->find('span[class="vertical-date"]');
         $i=0;
@@ -67,7 +67,6 @@ class Courier
               $scan[$i]['details']  = $event ?? '';
               $pickupdate = $scan[$i]['time'] ?? '';
               $destination_from = $scan[$i]['location'] ?? '';
-              $current_status = $scan[$i]['details'] ?? '';
               $status_date    = $scan[$i]['date'] ?? '';
               $status_time    = $scan[$i]['time'] ?? '';
               $i++;
@@ -86,6 +85,7 @@ class Courier
         $status_date    = $scan[0]['date'] ?? '';
         $status_time    = $scan[0]['time'] ?? '';
         $destination_to = $scan[0]['location'] ?? '';
+        $current_status = $scan[0]['details'] ?? '';
         $return_array['scan'] = $scan;
         $return_array['destination_from'] = $destination_from ?? '';
         $return_array['destination_to']   = $destination_to ?? '';
