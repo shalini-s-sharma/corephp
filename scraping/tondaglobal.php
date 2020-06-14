@@ -51,6 +51,9 @@ class Courier
         if(!empty($data)){
           foreach($data as $value){
             $ul = $value->find('ul li',0)->innertext ?? '';
+            if(empty($ul)){
+              continue;
+            }
             $ul =  trim(html_entity_decode($ul));
             $ul = preg_replace('/<(.+?)[\s]*\/?[\s]*>/i','|',$ul);
             $arr = explode('||',$ul);
