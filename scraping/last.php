@@ -22,14 +22,14 @@ class Courier
         $scan             = array();
 
 
-        $url       = "https://home.abxexpress.com.my/track_single.asp?search=True&itemHAWB={awb_no}";
+        $url       = "http://47.104.161.73:8043/track_query.aspx?track_number={awb_no}";
 
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
        
         // $curl = new Curl;
         $response = $this->getCurl($url);
-        //echo $response;die;
+      //  echo $response;die;
         if (empty($response)) {
             $error['error'] = 'No information found.Please try again.';
             return $error;
@@ -41,32 +41,30 @@ class Courier
             return $error;
         }    
         
-        $li = $html->find('ul[id="first-list"] li');
-       
-        if(!empty($li)){
-            $i = 0;
-            foreach ($li as $key => $value) {
-                $location = $value->find('div[class="title"]',0)->innertext ?? '';
-                $details = $value->find('div[class="info"]',0)->innertext ?? '';
-                 
-                #invlaid tracking id
-                if(!empty($location) && $location == 'SORRY' && !empty($details)){
-                  $error['error'] = 'No information found.Please try again.';
-                  return $error;
-                }
-                $date = $value->find('div[class="time"] span',0)->innertext ?? '';
-                $time = $value->find('div[class="time"] span',1)->innertext ?? '';
-                
-                $scan[$i]['date']     = !empty($date) ? date('Y-m-d', strtotime(str_replace('/', '-',$date))) : '';
-                $scan[$i]['time']     = !empty($date) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $date))) : '';
-                $scan[$i]['location'] = $location ?? '';
-                $scan[$i]['details']  = $details ?? '';
-                $pickupdate = $scan[$i]['time'];
-                $destination_to = $scan[$i]['location'];
-                $i++;
+        $li1 = $html->find('div[class="vote-info"] ul li',0);
+        $destination= $li1->find('span span[class="msgcss"]',1)->innertext ?? '';
+       // echo $destination;die;
+        $li2 = $html->find('div[class="vote-info"] ul li',1);
+        $current_status = $li2->find('span[class="msgcss"]',0)->innertext ?? '';
+
+        $data =  $html->find('span[class="vertical-date"]');
+        if(!empty($data)){
+          foreach($data as $value){
+            $ul = $value->find('ul li',0)->innertext ?? '';
+            $ul = htmlentities($ul);
+            echo $ul;
+        
+            $tag = 'i';
+            preg_replace('/<(.+?)[\s]*\/?[\s]*>/si',',', $ul);
+            echo $ul;die;
+            if(!empty($ul)){
+              $arr = explode('</i>',$ul);
+              print_r($arr);die;
             }
             
+          }
         }
+    
         $html->clear();
         unset($html);
         
@@ -108,11 +106,10 @@ class Courier
         $cookies = '';
         foreach($matches[1] as $item) {
             $cookies = $item;
-            // parse_str($item, $cookie);
-            // $cookies = array_merge($cookies, $cookie);
         }
         
         if(!empty($cookies)){
+            $cookies .= ';i18next_lng=en';
             curl_setopt_array($curl, array(
               CURLOPT_URL => $url,
               CURLOPT_RETURNTRANSFER => true,
@@ -147,10 +144,9 @@ class Courier
 }
 
 
-$track = $_GET['track_id'];
-//"83361027361"
-$object = New Courier($track);
-$data = $object->scrapping($track);
+
+$object = New Courier();
+$data = $object->scrapping("TDQAB0003536942YQ");
 echo '<pre>';print_r($data);die;
 include('view.php');
 // print_r($data);
