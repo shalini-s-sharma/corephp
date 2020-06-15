@@ -268,7 +268,7 @@ class ModelCourierScgExpress extends Model
 
 // $track = $_GET['track_id'];
 // //"121394342823"
-// $object = New Courier();
+// $object = new ModelCourierScgExpress();
 // $data = $object->scrapping($track);
 // echo '<pre>';print_r($data);die;
 // include('view.php');

@@ -237,7 +237,7 @@ class ModelCourierShippigo extends Model
 
 // $track = $_GET['track_id'];
 // //"2844510164533"
-// $object = New Courier();
+// $object = New ModelCourierShippigo();
 // $data = $object->scrapping($track);
 //  echo '<pre>';print_r($data);die;
 // include('view.php');

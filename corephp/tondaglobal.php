@@ -262,7 +262,7 @@ class ModelCourierTondaGlobal extends Model
 
 // $track = $_GET['track_id'];
 // //"TDQAB0003536942YQ"
-// $object = New Courier();
+// $object = New ModelCourierTondaGlobal();
 // $data = $object->scrapping($track);
 // echo '<pre>';print_r($data);die;
 // include('view.php');
