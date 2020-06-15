@@ -1,9 +1,9 @@
 
 <?php
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-include('simplehtmldom/simple_html_dom.php');
-class Courier 
+// error_reporting(E_ALL);
+// ini_set("display_errors", 1);
+// include('simplehtmldom/simple_html_dom.php');
+class ModelCourierTondaGlobal extends Model
 {
     private $error;
 
@@ -94,6 +94,7 @@ class Courier
         $return_array['status_date'] = $status_date;
         $return_array['status_time'] = $status_time;
         $return_array['pickupdate']  = $pickupdate ?? '';
+        $return_array['onj_status'] = $this->statusMapping($current_status);
        
         return $return_array;  
     }
@@ -156,15 +157,114 @@ class Courier
         }
     
       }
+
+      private function clean($value)
+      {
+          return preg_replace('!\s+!', ' ', trim(strip_tags($value)));
+      }
+  
+      public function statusMapping($status)
+      {
+          $status = strtoupper(str_replace('&nbsp;', '', trim(addslashes(strip_tags($status)))));
+          
+          $status_data = $this->registry->get('carrier_status', '221');
+          
+           
+  
+          if (isset($status_data[$status])) {
+              return $status_data[$status];
+          } else if (strstr($status, "YOUR SHIPMENT IS READY FOR CLAIMING")) {
+              return 'OOD';
+          }
+          else if (strstr($status, "ARRIVED AT COD EXCHANGE")) {
+              return 'INT';
+          }
+          else if (strstr($status, "ARRIVED AT")) {
+              return 'INT';
+          }
+          else if (strstr($status, "READY FOR DELIVERY")) {
+              return 'OOD';
+          }else if (strstr($status, "FORWARDED TO")) {
+              return 'INT';
+          }
+          else if (strstr($status, "ACCEPTED AT")) {
+              return 'SCH';
+          } 
+          else if (strstr($status, "SHIPMENT DELIVERED")) {
+              return 'DEL';
+          }
+          else if (strstr($status, "DELIVERED")) {
+              return 'DEL';
+          } 
+          else if (strstr($status, "PACKAGE DELIVERED")) {
+              return 'DEL';
+          }
+         else if (strstr($status, "RECEIVED BY")) {
+             return 'DEL';
+          }
+          else if (strstr($status, "CONSIGNMENT DELIVERED")) {
+              return 'DEL';
+          }
+          else if (strstr($status, "DELIVERED")) {
+              return 'DEL';
+          }
+          else if (strstr($status, "YOUR SHIPMENT WAS NOT DELIVERED DUE TO AN UNFORESEEN EVENT. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+              return 'UND';
+          }
+           else if (strstr($status, "READY FOR DELIVERY. PLEASE EXPECT DELIVERY WITHIN THE DAY")) {
+              return 'OOD';
+          } else if (strstr($status, "ARRIVED AT JOLO")) {
+              return 'INT';
+          }else if (strstr($status, "ARRIVED AT")) {
+              return 'INT';
+          } else if (strstr($status, "FORWARDED TO")) {
+              return 'INT';
+          } else if (strstr($status, "ARRIVED AT ZAMBOANGA DISTRIBUTION TEAM")) {
+              return 'INT';
+          } else if (strstr($status, "FORWARDED TO ZAMBOANGA DISTRIBUTION TEAM")) {
+              return 'INT';
+          } else if (strstr($status, "ARRIVED AT GENERAL SANTOS DISTRIBUTION TEAM")) {
+              return 'INT';
+          }else if (strstr($status, "ACCEPTED AT")) {
+              return 'SCH';
+          }else if (strstr($status, "WE TRIED TO DELIVER YOUR SHIPMENT BUT RECIPIENT IS UNKNOWN AT THE GIVEN ADDRESS. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+              return 'UND';
+          }else if (strstr($status, "WE TRIED TO DELIVER YOUR SHIPMENT BUT THERE WAS A REQUEST TO POSTPONE THE DELIVERY. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+              return 'UND';
+          }else if (strstr($status, "CLAIMED BY")) {
+              return 'DEL';
+          }else if (strstr($status, "CLAIMED AT")) {
+              return 'DEL';
+          }else if (strstr($status, "RECEIVED")) {
+             return 'DEL';
+          }else if (strstr($status, "BRANCH COLLECT TRACKING NUMBER HAS BEEN SENT VIA SMS. UPON PRESENTATION OF VALID IDS, THE AMOUNT CAN BE CLAIMED/WITHDRAWN AT ANY LBC BRANCH")) {
+             return 'DEL';
+          }else if (strstr($status, "RELEASED TO AUTHORIZED REPRESENTATIVE")) {
+             return 'DEL';
+          }else if (strstr($status, "REMITTANCE HAS BEEN CLAIMED")) {
+             return 'DEL';
+          }else if (strstr($status, "SHIPMENT IS WITH A CONCERN. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+             return 'SMD';
+          }else if (strstr($status, "WE TRIED TO DELIVER YOUR SHIPMENT BUT RECIPIENT\'S ADDRESS CANNOT BE LOCATED. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+             return '22';
+          }else if (strstr($status, "SHIPMENT WAS RETURNED TO THE SENDER")) {
+             return 'RTD';
+          }else if (strstr($status, "YOUR SHIPMENT WAS NOT DELIVERED DUE TO PAYMENT ISSUES DURING DELIVERY. PLEASE GET IN TOUCH WITH US THROUGH OUR OFFICIAL CUSTOMER CARE CHANNELS")) {
+             return 'UND';
+          }else if (strstr($status, "YOUR SHIPMENT WAS NOT DELIVERED")) {
+             return 'UND';
+          }
+          return $status;
+      }
 }
 
 
 
-$track = $_GET['track_id'];
-//"TDQAB0003536942YQ"
-$object = New Courier();
-$data = $object->scrapping($track);
-echo '<pre>';print_r($data);die;
-include('view.php');
+// $track = $_GET['track_id'];
+// //"TDQAB0003536942YQ"
+// $object = New Courier();
+// $data = $object->scrapping($track);
+// echo '<pre>';print_r($data);die;
+// include('view.php');
 // print_r($data);
 
