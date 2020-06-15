@@ -48,10 +48,10 @@ class ModelCourierAbxExpress extends Model
             foreach ($li as $key => $value) {
                 $location = $value->find('div[class="title"]',0)->innertext ?? '';
                 $details = $value->find('div[class="info"]',0)->innertext ?? '';
-                 
+                
                 #invlaid tracking id
                 if(!empty($location) && $location == 'SORRY' && !empty($details)){
-                  $error['error'] = 'No information found.Please try again.';
+                  $error['error'] = $details;
                   return $error;
                 }
                 $date = $value->find('div[class="time"] span',0)->innertext ?? '';
@@ -247,7 +247,7 @@ class ModelCourierAbxExpress extends Model
 
 // $track = $_GET['track_id'];
 // //"83361027361"
-// $object = New Courier();
+// $object = New ModelCourierAbxExpress();
 // $data = $object->scrapping($track);
 // echo '<pre>';print_r($data);die;
 // include('view.php');
