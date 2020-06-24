@@ -38,7 +38,7 @@ class ModelCourierBlowHorn
            $i = 0;
            foreach ($result['message'] as $value) {
             $date = !empty($value['time']) ? $value['time'] : '';
-            $location = !empty($value['location']) ? '' : '';
+            $location = !empty($value['location']) && is_array($value['location']) ? '' : '';
             $details = !empty($value['status']) ? $value['status'] : '';
             $status = !empty($value['status']) ? $value['status'] : '';
             if(!empty($date)){
