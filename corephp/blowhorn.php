@@ -7,7 +7,7 @@ class ModelCourierBlowHorn
 {
     private $error;
 
-    function scrapping($waybill_number)
+    function api_scrapping($waybill_number,$credential)
     {
         $status_date      = '';
         $status_time      = '';
@@ -20,13 +20,23 @@ class ModelCourierBlowHorn
         $extras           = array();
         $return_array     = array();
         $scan             = array();
-
-
+       // print_r($credential['loginid']);die;
+        if (!isset($credential['loginid'])) {
+            $return_array['error'] = 'You are not authorised!';
+            return $return_array;
+        }
+        $api_key = !empty($credential['loginid']) ? $credential['loginid'] : '';
+       
+        if(empty($api_key)){
+            $return_array['error'] = 'You are not authorised!';
+            return $return_array;
+        }
+        
         $url       = "https://beta.blowhorn.com/api/orders/{awb_no}/status/history";
 
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
-        $response = $this->getCurl($url);
+        $response = $this->getCurl($url,$api_key);
         
        $result = json_decode($response,1);
        if($result['status'] == 'FAIL'){
@@ -64,12 +74,12 @@ class ModelCourierBlowHorn
         $return_array['status_date'] = $status_date;
         $return_array['status_time'] = $status_time;
         $return_array['pickupdate']  = !empty($pickupdate) ? $pickupdate : '';
-         $return_array['onj_status'] = $this->statusMapping($current_status);
+        $return_array['onj_status'] = $this->statusMapping($current_status);
         return $return_array;  
     }
 
-    function getCurl($url){
-
+    function getCurl($url,$api_key){
+        
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
@@ -81,7 +91,7 @@ class ModelCourierBlowHorn
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
-              "API_KEY: oxKFSWRkwXmIQvJLaEqVTp6U45dCbu"
+              "API_KEY: $api_key"
             ),
           ));
       
@@ -200,9 +210,11 @@ class ModelCourierBlowHorn
 
 $track = $_GET['track_id'];
 //"SH-1JJWSHO"
+$api_key['loginid'] = $_GET['loginid'];
+//oxKFSWRkwXmIQvJLaEqVTp6U45dCbu
 $object = New ModelCourierBlowHorn();
-$data = $object->scrapping($track);
+$data = $object->api_scrapping($track,$api_key);
 echo '<pre>';print_r($data);die;
-include('view.php');
-print_r($data);
+// include('view.php');
+// print_r($data);
 
