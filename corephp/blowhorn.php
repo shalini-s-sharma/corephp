@@ -21,11 +21,11 @@ class ModelCourierBlowHorn
         $return_array     = array();
         $scan             = array();
        // print_r($credential['loginid']);die;
-        if (!isset($credential['loginid'])) {
+        if (!isset($credential['api_key'])) {
             $return_array['error'] = 'You are not authorised!';
             return $return_array;
         }
-        $api_key = !empty($credential['loginid']) ? $credential['loginid'] : '';
+        $api_key = !empty($credential['api_key']) ? $credential['api_key'] : '';
        
         if(empty($api_key)){
             $return_array['error'] = 'You are not authorised!';
@@ -210,7 +210,7 @@ class ModelCourierBlowHorn
 
 $track = $_GET['track_id'];
 //"SH-1JJWSHO"
-$api_key['loginid'] = $_GET['loginid'];
+$api_key['api_key'] = $_GET['api_key'];
 //oxKFSWRkwXmIQvJLaEqVTp6U45dCbu
 $object = New ModelCourierBlowHorn();
 $data = $object->api_scrapping($track,$api_key);
