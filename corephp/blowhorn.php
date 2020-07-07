@@ -7,7 +7,7 @@ class ModelCourierBlowHorn
 {
     private $error;
 
-    function api_scrapping($waybill_number,$credential)
+    function api_scrapping($waybill_number = '',$credential)
     {
         $status_date      = '';
         $status_time      = '';
@@ -26,13 +26,38 @@ class ModelCourierBlowHorn
             return $return_array;
         }
         $api_key = !empty($credential['api_key']) ? $credential['api_key'] : '';
-       
+        $ref_no = !empty($credential['ref_no']) ? $credential['ref_no'] : '';
         if(empty($api_key)){
             $return_array['error'] = 'You are not authorised!';
             return $return_array;
         }
+
+        if(empty($ref_no)){
+            $return_array['error'] = 'Reference number is required!';
+            return $return_array;
+        }
+
+        $preUrl = 'https://blowhorn.com/api/orders/shipment/{order_id}';
+        $preUrl = str_replace('{order_id}', $order_id, $preUrl);
         
-        $url       = "https://beta.blowhorn.com/api/orders/{awb_no}/status/history";
+        $response = $this->getCurl($preUrl,$api_key);
+
+        $result = json_decode($response,1);
+        if($result['status'] == 'FAIL'){
+                $error['error'] = $result['message'];
+                return $error;
+        }
+
+        if(!empty($result['message']['order_details']['awb_number'])){
+            $waybill_number = $result['message']['order_details']['awb_number'];
+        }
+
+        if(empty($waybill_number)){
+            $return_array['error'] = 'AWB Number is required!';
+            return $return_array;
+        }
+        
+        $url       = "https://blowhorn.com/api/orders/{awb_no}/status/history";
 
         $url = str_replace('{awb_no}', $waybill_number, $url);
        
@@ -208,10 +233,14 @@ class ModelCourierBlowHorn
 }
 
 
-$track = $_GET['track_id'];
 //"SH-1JJWSHO"
+$track = $_GET['track_id'] ?? '';
+//2006622838
+$ref_no = $_GET['ref_no'];
+//MGCJqKlh36Epo4SX1D0rm2xLFWfsPU
 $api_key['api_key'] = $_GET['api_key'];
-//oxKFSWRkwXmIQvJLaEqVTp6U45dCbu
+$api_key['ref_no'] = $_GET['ref_no'];
+
 $object = New ModelCourierBlowHorn();
 $data = $object->api_scrapping($track,$api_key);
 echo '<pre>';print_r($data);die;
